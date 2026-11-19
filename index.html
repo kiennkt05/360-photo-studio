@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1324">
+  <meta name="description" content="Chỉnh góc nhìn mặc định và bổ sung GPano XMP cho ảnh 360° ngay trong trình duyệt. Miễn phí, không tải ảnh lên máy chủ.">
+  <title>360° Photo Studio — Metadata & Initial View Editor</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="site-header">
+      <a href="./" class="brand" aria-label="360 Photo Studio, trang chủ"><span class="brand-mark">360<span>°</span></span><span>Photo Studio</span></a>
+      <div class="header-right"><span class="status-pill"><span class="status-dot"></span> Xử lý riêng tư trên thiết bị</span><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site" target="_blank" rel="noopener noreferrer" class="header-link">GitHub Pages <span aria-hidden="true">↗</span></a></div>
+    </header>
+
+    <section class="hero">
+      <p class="eyebrow">360 PANORAMA • GPANO XMP • FACEBOOK READY</p>
+      <h1>Chọn góc nhìn đầu tiên.<br><span>Giữ trọn thế giới 360°.</span></h1>
+      <p class="subtitle">Xoay ảnh bằng chuột, đặt góc nhìn mặc định và xuất JPG có metadata panorama. Ảnh của bạn không rời khỏi trình duyệt.</p>
+    </section>
+
+    <main class="workspace">
+      <section class="main-panel" aria-label="Vùng xem ảnh">
+        <div class="panel-header"><div><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Xem và chọn góc nhìn</h2></div><span class="count-chip" id="fileState">Chưa chọn ảnh</span></div>
+        <div class="viewer-container" id="viewerContainer">
+          <canvas id="viewer" width="720" height="405" tabindex="0" aria-label="Khung xem ảnh 360 độ; kéo để đổi hướng nhìn"></canvas>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">◎</div>
+            <h3>Thả ảnh panorama vào đây</h3>
+            <p>Hỗ trợ ảnh 360° equirectangular JPG hoặc PNG, tỷ lệ 2:1</p>
+            <button class="button button-primary" id="chooseBtn" type="button">＋ Chọn ảnh từ máy</button>
+            <span class="empty-footnote">Không đăng tải lên bất kỳ máy chủ nào</span>
+          </div>
+          <div class="viewer-hint hidden" id="viewerHint"><span>✥ Kéo để xoay</span><span>◫ Cuộn để zoom</span></div>
+          <div class="drop-indicator hidden" id="dropIndicator">Thả ảnh để bắt đầu</div>
+        </div>
+        <input id="fileInput" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden>
+
+        <div class="below-viewer">
+          <div class="preview-top"><div><h3>Bản đồ toàn cảnh</h3><p>Chạm vào vị trí để chọn hướng và độ cao</p></div><button id="changeImageBtn" type="button" class="text-button" disabled>Đổi ảnh <span>↗</span></button></div>
+          <div class="map-frame"><canvas id="mapCanvas" width="850" height="425" aria-label="Bản đồ panorama, nhấn để chọn góc nhìn"></canvas><div class="map-empty" id="mapEmpty">Bản đồ ảnh 2:1 sẽ xuất hiện tại đây</div></div>
+          <div class="file-info" id="fileInfo" aria-live="polite">Chưa có file ảnh được chọn.</div>
+        </div>
+      </section>
+
+      <aside class="side-panel" aria-label="Các điều khiển">
+        <div class="side-header"><div class="section-kicker">TÙY CHỈNH THỦ CÔNG</div><h2>Góc nhìn mặc định</h2><p>Điều chỉnh bằng thanh trượt, nhập số hoặc kéo trực tiếp ảnh.</p></div>
+        <div class="control"><div class="control-title"><label for="heading">Heading <small>Hướng ngang</small></label><div class="number-field"><input type="number" id="headingNumber" min="0" max="359.9" step="0.1" value="180" aria-label="Heading, độ"><span>°</span></div></div><input type="range" id="heading" min="0" max="359.9" step="0.1" value="180"><div class="scale"><span>0°</span><span>180°</span><span>360°</span></div></div>
+        <div class="control"><div class="control-title"><label for="pitch">Pitch <small>Nhìn lên / xuống</small></label><div class="number-field"><input type="number" id="pitchNumber" min="-85" max="85" step="0.1" value="0" aria-label="Pitch, độ"><span>°</span></div></div><input type="range" id="pitch" min="-85" max="85" step="0.1" value="0"><div class="scale"><span>−85° xuống</span><span>0°</span><span>+85° lên</span></div></div>
+        <div class="control"><div class="control-title"><label for="fov">FOV <small>Độ rộng góc nhìn</small></label><div class="number-field"><input type="number" id="fovNumber" min="40" max="120" step="1" value="90" aria-label="FOV, độ"><span>°</span></div></div><input type="range" id="fov" min="40" max="120" step="1" value="90"><div class="scale"><span>40° gần</span><span>90°</span><span>120° rộng</span></div></div>
+        <button id="resetBtn" type="button" class="button button-secondary">↺ Đưa góc nhìn về giữa</button>
+
+        <div class="panel-rule"></div>
+        <div class="side-header"><div class="section-kicker">THIẾT LẬP XUẤT</div><h2>Ảnh Facebook 360°</h2></div>
+        <label class="toggle-wrap" for="rotatePixels"><span><strong>Xoay panorama về giữa</strong><small>Dịch ảnh để hướng đã chọn nằm giữa ảnh 2:1; giúp nhiều trình xem mở đúng hướng hơn.</small></span><input id="rotatePixels" type="checkbox" checked><span class="toggle-ui" aria-hidden="true"></span></label>
+        <div class="compact-control"><label for="outputSize">Độ phân giải</label><select id="outputSize"><option value="original">Giữ nguyên ảnh gốc</option><option value="8192">Tối đa 8192 px chiều rộng</option><option value="4096">Tối đa 4096 px chiều rộng</option><option value="2048">Tối đa 2048 px chiều rộng</option></select></div>
+        <div class="compact-control"><label for="quality">Chất lượng JPG <span id="qualityLabel">94%</span></label><input type="range" id="quality" min="70" max="100" step="1" value="94"></div>
+        <button id="exportBtn" type="button" class="button button-export" disabled><span>↓</span> Xuất JPG 360° + GPano</button>
+        <div id="feedback" class="feedback" role="status" aria-live="polite">Chọn ảnh để bắt đầu chỉnh sửa.</div>
+        <p class="fineprint">Xuất JPG mới, thêm XMP GPano và bỏ metadata cũ (bao gồm vị trí GPS nếu có). Facebook có thể hiển thị hướng mở khác nhau tùy phiên bản ứng dụng.</p>
+      </aside>
+    </main>
+
+    <section class="howto"><div class="howto-head"><div class="section-kicker">HƯỚNG DẪN NHANH</div><h2>Chỉ 3 bước để đăng ảnh 360°</h2></div><div class="steps"><article><span class="step-num">01</span><h3>Chọn ảnh gốc</h3><p>Xuất ảnh 360° dạng equirectangular từ Insta360, rồi chọn JPG/PNG 2:1.</p></article><article><span class="step-num">02</span><h3>Đặt góc mở đầu</h3><p>Kéo trong khung xem, hoặc chỉnh Heading, Pitch và FOV. Có thể chạm vào bản đồ bên dưới.</p></article><article><span class="step-num">03</span><h3>Xuất và đăng</h3><p>Tải JPG đã thêm metadata GPano, đăng lên Facebook và kiểm tra biểu tượng 360°.</p></article></div></section>
+    <footer><span>360° Photo Studio · Công cụ web tĩnh, mã nguồn có thể triển khai trên GitHub Pages.</span><span>Không liên kết chính thức với Insta360 hoặc Meta.</span></footer>
+  </div>
+</body>
+</html>
